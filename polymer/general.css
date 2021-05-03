@@ -1,0 +1,29 @@
+:root {
+  --dark-gray: rgba(42, 42, 42, 1);
+  --gray: rgba(84, 84, 84, 1);
+  --light-gray: rgba(126, 126, 126, 1);
+  --lightest-gray: rgb(196, 196, 196);
+  
+  --theme-black: rgb(8, 8, 14);
+  --theme-white: rgb(230, 255, 255);
+  
+  --theme-dark-blue: #030157;
+  --theme-blue: #1d33fd;
+  --theme-light-blue: #00ccff;
+
+  --theme-dark-purple: #1d009c;
+  --theme-purple: #3000ff;
+  --theme-light-purple: #3000ff;
+
+  --theme-cyan: #00f7ff;
+  --theme-green: #02923e;
+  --theme-light-green: #00ff36;
+}
+
+body {
+  background-color: var(--theme-black);
+  color: var(--theme-white);
+  font-family: inconsolata;
+}
+
+

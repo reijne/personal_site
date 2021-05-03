@@ -1,0 +1,21 @@
+{
+  "name": "Youri Reijne Personal Sit",
+  "short_name": "YR site",
+  "description": "A brief introduction into my person, and a showcase of what I've done.",
+  "icons": [
+    {
+      "src": "images/manifest/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/manifest/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#27007F",
+  "background_color": "#27007F"
+}
