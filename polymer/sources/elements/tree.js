@@ -1,5 +1,5 @@
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
-
+import { getThemeColors, getStandardCount, getStandardSize } from '../general.js'
 
 class Tree extends PolymerElement {
   static get template() {
@@ -61,6 +61,7 @@ class Tree extends PolymerElement {
     this.setSize();
     this.createSquares();
     this._animate();
+    console.log(getThemeColors());
   }
 
   disconnectedCallback() {
@@ -83,8 +84,8 @@ class Tree extends PolymerElement {
 
   createSquares() {
     // Define the amount of visualisations and their size
-    var thisManyVis = 50;
-    var size = 5;
+    var thisManyVis = getStandardCount();
+    var size = getStandardSize();
     if (this.viscount) thisManyVis = parseInt(this.viscount);
     if (this.vissize) size = parseInt(this.vissize);
 
@@ -95,13 +96,18 @@ class Tree extends PolymerElement {
 
     this.squares = [];
     const speed = 4;    
+    var colors = getThemeColors();
+    var whiteTransparant = "rgba(255,255,255," + alpha + ")"
     for (let i = 0; i < thisManyVis; i++) {
       var x = Math.random() * (this.width - 3*size) + size;
       var y = Math.random() * (this.height - 3*size) + size;
       var dx = (Math.random() - 0.5) * speed;
       var dy = (Math.random() - 0.5) * speed;
+      var color = colors[Math.floor(Math.random() * colors.length)]
+      var choice = Math.random();
+      if (choice > 0.5) color = whiteTransparant;
       this.squares.push(new WalkingSquare(x, y, dx, dy, this.ctx, size, this.width, this.height,
-                                           "rgba(255,255,255," + alpha + ")"));
+                                           color));
     }
   }
 
@@ -139,6 +145,26 @@ class WalkingSquare {
     this.ctx.fillRect(this.x, this.y, this.size, this.size);
   }
 
+  drawTail(size, accumSize) {
+    if (size < 0.01 * this.size) return;
+    this.ctx.fillStyle = this.color;
+    var xer;
+    var yer;
+    if (this.dx > 0) {
+      xer = this.x - 0.5 * this.dx * (this.size + accumSize);    
+    } else {
+      xer = this.x - this.dx * (this.size + accumSize);    
+    }
+
+    if (this.dy > 0) {
+      yer = this.y - 0.5 * this.dy * (this.size + accumSize);
+    } else {
+      yer = this.y - this.dy * (this.size + accumSize);
+    }
+    this.ctx.fillRect(xer, yer, size, size);
+    this.drawTail(0.5*size, accumSize+size);
+  }
+
   // Move the square along using its velocity but clip at the screen and bounce.
   update() {
     if (this.x > (this.width - this.size)) {
@@ -157,6 +183,7 @@ class WalkingSquare {
     }
     this.x += this.dx;
     this.y += this.dy;
+    this.drawTail(0.5*this.size, 0);
     this.draw();
   }
 }

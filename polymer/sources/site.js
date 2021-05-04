@@ -114,6 +114,7 @@ class Site extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
+    console.log(MyAppGlobals.rootPath)
     // console.log("halp");
     // console.log(route);
   }

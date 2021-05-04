@@ -2,7 +2,7 @@
 
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
-import {getMaxSize, getMaxSquares} from'../general.js';
+import {getMaxSize, getMaxSquares , getStandardCount, getStandardSize} from'../general.js';
 import '../elements/tree';
 
 class Me extends PolymerElement {
@@ -77,11 +77,14 @@ class MeDesktop extends PolymerElement {
         h1 {
           display: inline;
         }
-        p {
+        h4 {
           margin-left: 10%;
         }
         hr {
           border: 1px solid var(--theme-dark-purple);
+        }
+        .spacer {
+          margin-top: 10%;
         }
       </style>
 
@@ -94,14 +97,18 @@ class MeDesktop extends PolymerElement {
             <div class="mid">
               <h1>Youri</h1><h1 class="theme-purple">.me()</h1>
               <hr>
-              <p>Software Engineer</p>
-              <p>Game Developer</p>
-              <p>Website Designer</p>
+              <h4>=> Software Engineer</h4>
+              <h4>=> Game Developer</h4>
+              <h4>=> Website Designer</h4>
+              <div class="spacer"></div>
+              <h4>-> Driven</h4>
+              <h4>-> Creative</h4>
+              <h4>-> Creative</h4>
             </div>
             <div class="end">
               <form>
-                <paper-input id="inCount" type="text" on-input="changeCount" label="Count:" value="50"></paper-input>
-                <paper-input id="inSize" type="text" on-input="changeSize" label="Size:" value="5"></paper-input>
+                <paper-input id="inCount" type="text" on-input="changeCount" label="Count:" value="[[inputcount]]"></paper-input>
+                <paper-input id="inSize" type="text" on-input="changeSize" label="Size:" value="[[inputsize]]"></paper-input>
               </form>
             </div>  
           </div>
@@ -122,6 +129,12 @@ class MeDesktop extends PolymerElement {
         type: String
       }
     }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.inputcount = getStandardCount();
+    this.inputsize = getStandardSize();
   }
 
   changeCount() {

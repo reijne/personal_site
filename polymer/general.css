@@ -13,7 +13,11 @@
 
   --theme-dark-purple: #1d009c;
   --theme-purple: #3000ff;
-  --theme-light-purple: #3000ff;
+  --theme-light-purple: #5222ff;
+
+  --theme-dark-red: #690000;
+  --theme-red: #d30b0b;
+  --theme-light-red: #ff1313;
 
   --theme-cyan: #00f7ff;
   --theme-green: #02923e;
