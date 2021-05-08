@@ -1,8 +1,10 @@
 // Page containing information about me, and a canvas showing some fun shit 
 
+import { Polymer } from '@polymer/polymer/polymer-legacy.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
-import {getMaxSize, getMaxSquares , getStandardCount, getStandardSize} from'../general.js';
+import { visfun, getWindowFormat } from '../general.js';
+// import {getMaxSize, getMaxSquares, getStandardCount, getStandardSize, getWindowFormat, getStandardSpeed, getMaxSpeed} from'../general.js';
 import '../elements/tree';
 
 class Me extends PolymerElement {
@@ -14,21 +16,15 @@ class Me extends PolymerElement {
           height: 100%;
         }        
       </style>
-      <me-desktop style="display:[[showdesktop]]"></me-desktop>
+      <me-desktop style="slowdown:[[slowdown]]"></me-desktop>
     `;
   }
   
   static get properties() {
     return {
-      showmobile: {
-        type: String
-      }, 
-      showtablet: {
-        type: String
+      slowdown: {
+        type: Boolean
       },
-      showdesktop: {
-        type: String
-      }
     };
   }
   
@@ -50,8 +46,7 @@ class MeDesktop extends PolymerElement {
           --paper-input-container-focus-color: var(--theme-light-purple);
         }
         .container {
-          display: grid;
-          grid-template-columns: 50% auto; 
+          display: grid; 
           height: 100%;
           width: 100%;
         }
@@ -74,10 +69,18 @@ class MeDesktop extends PolymerElement {
         .end {
           grid-row: en1/en2;
         }
+        .sidebyside {
+          display: grid;
+          grid-template-columns: 50% auto;
+        }
         h1 {
           display: inline;
+          margin: 0px;
         }
-        h4 {
+        h3 {
+          margin: 0px;
+        }
+        .leftSpace {
           margin-left: 10%;
         }
         hr {
@@ -87,71 +90,127 @@ class MeDesktop extends PolymerElement {
           margin-top: 10%;
         }
       </style>
-
-      <div class="container">
+      <flex-container>
+      
+      <div id="dogshite" class="container" style="grid-template-columns: [[columnus]];">
         <div>
-          <tree-canvas ctype="desktop" viscount=[[inputcount]] vissize=[[inputsize]]></tree-canvas>
+          <tree-canvas ctype="desktop" viscount=[[inputcount]] vissize=[[inputsize]] visspeed=[[inputspeed]]></tree-canvas>
         </div>
         <div>
           <div style="z-index: 10"class="verticon">
-            <div class="mid">
-              <h1>Youri</h1><h1 class="theme-purple">.me()</h1>
+            <div class="mid" style="grid-row: [[highrows]]">
+              <h1>Youri_Reijne</h1>
               <hr>
-              <h4>=> Software Engineer</h4>
-              <h4>=> Game Developer</h4>
-              <h4>=> Website Designer</h4>
-              <div class="spacer"></div>
-              <h4>-> Driven</h4>
-              <h4>-> Creative</h4>
-              <h4>-> Creative</h4>
+              <div class="sidebyside">
+                <h3 class="theme-purple">.Properties()</h3><h3 class= "theme-purple">.Qualifications()</h3>
+              </div>
+              <div class="sidebyside">
+                <h3 class="leftSpace">Driven</h3><h3 class="leftSpace">Software Engineer</h3>
+              </div>
+              <div class="sidebyside">
+                <h3 class="leftSpace">Creative</h3><h3 class="leftSpace">Game Developer</h3>
+              </div>
+              <div class="sidebyside">
+                <h3 class="leftSpace">Enthusiastic</h3><h3 class="leftSpace">Website Designer</h3>
+              </div>
             </div>
-            <div class="end">
+            <div class="end" style="grid-row: [[lowrows]]">
               <form>
                 <paper-input id="inCount" type="text" on-input="changeCount" label="Count:" value="[[inputcount]]"></paper-input>
                 <paper-input id="inSize" type="text" on-input="changeSize" label="Size:" value="[[inputsize]]"></paper-input>
+                <paper-input id="inSpeed" type="text" on-input="changeSpeed" label="Speed:" value="[[inputspeed]]"></paper-input>
               </form>
             </div>  
           </div>
         </div>
       </div>
+      
+
+      </flex-container>
     `;
   }
 
   static get properties() {
     return {
-      inputcount: {
-        type: String
-      },
-      inputsize: {
-        type: String
-      },
-      themecolor: {
-        type: String
-      }
+      inputcount: String,
+      inputsize: String,
+      inputspeed: String,
+      themecolor: String,
+      columnus: String,
+      lowrows: String,
+      highrows: String,
     }
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.inputcount = getStandardCount();
-    this.inputsize = getStandardSize();
+    this.inputcount = visfun.getStandardCount();
+    this.inputsize = visfun.getStandardSize();
+    window.addEventListener("resize", this._onResize.bind(this));
+    this._onResize();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener("resize", this._onResize.bind(this));
+  }
+
+
+  _onResize() {
+    const showSize = getWindowFormat();
+    if (showSize == "mobile") {
+      this.columnus = "0% auto";
+      this.highrows = "st2/md1";
+      this.lowrows = "md1/md2";
+    } else if (showSize == "tablet") {
+      this.columnus = "30% auto";
+      this.highrows = "md1/md2";
+      this.lowrows = "en1/en2";
+    } else {
+      this.columnus = "50% auto";
+      this.highrows = "md1/md2";
+      this.lowrows = "en1/en2";
+    }
+    this.setStandard();
+  }
+
+  setStandard() {
+    const viscount = visfun.getStandardCount();
+    this.$.inCount.value = viscount;
+    this.inputcount = viscount;
+    
+    const vissize = visfun.getStandardSize();
+    this.$.inSize.value = vissize;
+    this.inputsize = vissize;
+
+    const visspeed = visfun.getStandardSpeed();
+    this.$.inSpeed.value = visspeed;
+    this.inputspeed = visspeed;
   }
 
   changeCount() {
     if (this.$.inCount.value < 0) {
       this.$.inCount.value = 1;
-    } else if (this.$.inCount.value > getMaxSquares()) {
-      this.$.inCount.value = getMaxSquares();
+    } else if (this.$.inCount.value > visfun.getMaxSquares()) {
+      this.$.inCount.value = visfun.getMaxSquares();
     } 
     this.inputcount = this.$.inCount.value;
   }
   changeSize() {
     if (this.$.inSize.value < 0) {
       this.$.inSize.value = 1;
-    } else if (this.$.inSize.value > getMaxSize()) {
-      this.$.inSize.value = getMaxSize();
+    } else if (this.$.inSize.value > visfun.getMaxSize()) {
+      this.$.inSize.value = visfun.getMaxSize();
     } 
     this.inputsize = this.$.inSize.value;
+  }
+  changeSpeed() {
+    if (this.$.inSpeed.value < 0) {
+      this.$.inSpeed.value = 1;
+    } else if (this.$.inSpeed.value > visfun.getMaxSpeed()) {
+      this.$.inSpeed.value = visfun.getMaxSpeed();
+    } 
+    this.inputspeed = this.$.inSpeed.value;
   }
 }
 

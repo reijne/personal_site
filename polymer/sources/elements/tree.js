@@ -1,5 +1,6 @@
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
-import { getThemeColors, getStandardCount, getStandardSize } from '../general.js'
+// import { getThemeColors, getStandardCount, getStandardSize, getStandardSpeed } from '../general.js'
+import { visfun, getThemeColors } from '../general.js'
 
 class Tree extends PolymerElement {
   static get template() {
@@ -20,31 +21,25 @@ class Tree extends PolymerElement {
   
   static get properties() {
     return {
-      ctype: {
-        type: String	
-      },
       width: {
         type: Number,
         observer: '_redraw'
       },
-      height: {
-        type: Number,
-        observer: '_redraw'
+      height: {type: Number,
+               observer: '_redraw'
       },
-      canvas: {
-        type: Object
-      },
-      ctx: {
-        type: Object
-      },
-      squares: {
-        type: Object
-      },
+      canvas: Object,
+      ctx: Object,
+      squares: Object,
       viscount: {
         type: Number,
         observer: '_redraw'
       },
       vissize: {
+        type: Number,
+        observer: '_redraw'
+      },
+      visspeed: {
         type: Number,
         observer: '_redraw'
       }
@@ -70,32 +65,27 @@ class Tree extends PolymerElement {
   }
 
   setSize() {
-    if (this.ctype == "desktop") {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
-      this.width = this.canvas.width;
-      this.height = this.canvas.height;
-    } else if (this.ctype == "tablet") {
-
-    } else if (this.ctype == "mobile") {
-
-    }
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
   }
 
   createSquares() {
     // Define the amount of visualisations and their size
-    var thisManyVis = getStandardCount();
-    var size = getStandardSize();
+    var thisManyVis = visfun.getStandardCount();
+    var size = visfun.getStandardSize();
+    var speed = visfun.getStandardSpeed();
     if (this.viscount) thisManyVis = parseInt(this.viscount);
     if (this.vissize) size = parseInt(this.vissize);
+    if (this.visspeed) speed = parseInt(this.visspeed);
 
     // Set the style
-    var alpha = 50 / (size * (0.1*thisManyVis));
+    var alpha = 50 / (size * Math.sqrt(thisManyVis));
     if (alpha < 0.1) alpha = 0.1;
     this.ctx.fillStyle = "rgba(255,255,255," + alpha + ")";
 
     this.squares = [];
-    const speed = 4;    
     var colors = getThemeColors();
     var whiteTransparant = "rgba(255,255,255," + alpha + ")"
     for (let i = 0; i < thisManyVis; i++) {
@@ -105,8 +95,10 @@ class Tree extends PolymerElement {
       var dy = (Math.random() - 0.5) * speed;
       var color = colors[Math.floor(Math.random() * colors.length)]
       var choice = Math.random();
-      if (choice > 0.5) color = whiteTransparant;
-      this.squares.push(new WalkingSquare(x, y, dx, dy, this.ctx, size, this.width, this.height,
+      // var randSize = Math.random() * size;
+      var randSize = size;
+      if (choice > 0.3) color = whiteTransparant;
+      this.squares.push(new WalkingSquare(x, y, dx, dy, this.ctx, randSize, this.width, this.height,
                                            color));
     }
   }
@@ -121,7 +113,6 @@ class Tree extends PolymerElement {
 
   _redraw() {
     this.createSquares();
-    // this._animate();
   }
 }
 
@@ -140,13 +131,15 @@ class WalkingSquare {
     this.color = color;
   }
 
+  // Draw the square
   draw() {
     this.ctx.fillStyle = this.color;
     this.ctx.fillRect(this.x, this.y, this.size, this.size);
   }
 
+  // Draw the tail of the square based on the velocity and a minimal size for a tail segment
   drawTail(size, accumSize) {
-    if (size < 0.01 * this.size) return;
+    if (size < 0.0625 * this.size) return;
     this.ctx.fillStyle = this.color;
     var xer;
     var yer;
@@ -174,8 +167,8 @@ class WalkingSquare {
       this.x = 0;
       this.dx = -this.dx;
     } 
-    if (this.y > (this.height - this.size)) {
-      this.y = this.height - this.size;
+    if (this.y > (this.height - this.size - 64)) {
+      this.y = this.height - this.size - 64;
       this.dy = -this.dy;
     } else if (this.y < 0){
       this.y = 0;

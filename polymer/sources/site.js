@@ -46,9 +46,11 @@ class Site extends PolymerElement {
         .full-height {
           height: calc(100% - 16px);
         }
-        a {
-          color: var(--theme-purple);
-          text-decoration: none;
+        .bar {
+          background-color: var(--theme-black);
+        }
+        .spacer {
+          width: 5%;
         }
       </style>
 
@@ -60,10 +62,12 @@ class Site extends PolymerElement {
       
       <app-header-layout>
         <app-header class="full-height" slot="header" fixed condenses effects="waterfall">
-          <app-toolbar>
-            <a href="[[rootPath]]"><div main-title>.me()</div></a>
-            <a href="[[rootPath]]/cv"><div>.cv()</div></a>
-            <a href="[[rootPath]]/projects"><div>.projects()</div></a>
+          <app-toolbar class="bar">
+            <nav-item gotodis="[[rootPath]]" title=".me()"></nav-item>
+            <div class="spacer"></div>
+            <nav-item gotodis="/cv" title=".cv()"></nav-item>
+            <div class="spacer"></div>
+            <nav-item gotodis="/projects" title=".projects()"></nav-item>
           </app-toolbar>
           <iron-pages class="full-height" selected="[[page]]" attr-for-selected="name" role="main">
             <me-page name="me"></me-page>
@@ -108,13 +112,14 @@ class Site extends PolymerElement {
         observer: '_pageChanged'
       },
       routeData: Object,
-      subroute: Object
+      subroute: Object,
+      slowdown: Boolean
     };
   }
 
   connectedCallback() {
     super.connectedCallback();
-    console.log(MyAppGlobals.rootPath)
+    // console.log(MyAppGlobals.rootPath)
     // console.log("halp");
     // console.log(route);
   }
@@ -169,3 +174,29 @@ class Site extends PolymerElement {
 }
 
 window.customElements.define('web-site', Site);
+
+class NavItem extends PolymerElement {
+  static get template() {
+    return html`
+      <style>
+      a {
+        color: var(--theme-purple);
+        text-decoration: none;
+      }
+      a:hover {
+        color: var(--theme-light-purple);
+      }
+      </style>
+      <a href="[[gotodis]]"><div>[[title]]</div></a>
+    `;
+  }
+
+  static get properties() {
+    return {
+      gotodis: String,
+      title: String
+    }
+  }
+}
+
+window.customElements.define('nav-item', NavItem);
