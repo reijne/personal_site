@@ -99,7 +99,6 @@ class Tree extends PolymerElement {
       var dy = (Math.random() - 0.5) * speed;
       var color = colors[Math.floor(Math.random() * colors.length)]
       var choice = Math.random();
-      // var randSize = Math.random() * size;
       var randSize = size;
       if (choice > 0.3) color = whiteTransparant;
       this.squares.push(new WalkingSquare(x, y, dx, dy, this.ctx, randSize, this.width, this.height,
