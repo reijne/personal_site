@@ -3,7 +3,7 @@
 import { Polymer } from '@polymer/polymer/polymer-legacy.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
-import { visfun, getWindowFormat } from '../general.js';
+import { visfun, getWindowFormat } from '../logic/general.js';
 // import {getMaxSize, getMaxSquares, getStandardCount, getStandardSize, getWindowFormat, getStandardSpeed, getMaxSpeed} from'../general.js';
 import '../elements/tree';
 

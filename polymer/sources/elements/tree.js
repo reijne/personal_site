@@ -1,6 +1,6 @@
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 // import { getThemeColors, getStandardCount, getStandardSize, getStandardSpeed } from '../general.js'
-import { visfun, getThemeColors } from '../general.js'
+import { visfun, getThemeColors } from '../logic/general.js'
 
 class Tree extends PolymerElement {
   static get template() {
@@ -50,6 +50,8 @@ class Tree extends PolymerElement {
     super.connectedCallback();
     this._onResize = this.setSize.bind(this);
     window.addEventListener("resize", this._onResize);
+    window.addEventListener("mousedown", this._onMouseDown);
+    window.addEventListener("mouseup", this._onMouseUp);
 
     this.canvas = this.$.canvas;
     this.ctx = this.canvas.getContext("2d");
@@ -62,6 +64,8 @@ class Tree extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("resize", this._onResize);
+    window.removeEventListener("mousedown", this._onMouseDown);
+    window.removeEventListener("mouseup", this._onMouseUp);
   }
 
   setSize() {
@@ -108,11 +112,22 @@ class Tree extends PolymerElement {
     this.ctx.clearRect(0, 0, this.width, this.height)
     for (let i = 0; i < this.squares.length; i++) {
       this.squares[i].update();
+      if (visfun.justClicked) this.squares[i].setRandomDirection();
     }
+    if (visfun.justClicked) visfun.justClicked = false; 
   }
 
   _redraw() {
     this.createSquares();
+  }
+
+  _onMouseDown(event) {
+    visfun.setMousePosition(event.pageX, event.pageY, event.which);
+  }
+
+  _onMouseUp() {
+    visfun.setMousePosition(null, null, 1);
+    visfun.justClicked = true;
   }
 }
 
@@ -160,6 +175,14 @@ class WalkingSquare {
 
   // Move the square along using its velocity but clip at the screen and bounce.
   update() {
+    this.bounceOnBorders();
+    this.moveSquare();
+    this.drawTail(0.5*this.size, 0);
+    this.draw();
+  }
+
+  // Bounce the square of the borders of the screen if it reaches it.
+  bounceOnBorders() {
     if (this.x > (this.width - this.size)) {
       this.x = this.width - this.size;
       this.dx = -this.dx;
@@ -174,9 +197,26 @@ class WalkingSquare {
       this.y = 0;
       this.dy = -this.dy;
     }
-    this.x += this.dx;
-    this.y += this.dy;
-    this.drawTail(0.5*this.size, 0);
-    this.draw();
   }
+
+  // Move the square to the mousedown position, or just along using the velocity.
+  moveSquare() {
+    if (visfun.mouse_x != null) {
+      if (visfun.mouse_x > this.x) this.x -= visfun.directionMultiplier*Math.abs(this.dx);
+      else if (visfun.mouse_x < this.x) this.x += visfun.directionMultiplier*Math.abs(this.dx);
+
+      if (visfun.mouse_y > this.y+64) this.y -= visfun.directionMultiplier*Math.abs(this.dy);
+      else if (visfun.mouse_y < this.y+64) this.y += visfun.directionMultiplier*Math.abs(this.dy);
+    } else {
+      this.x += this.dx;
+      this.y += this.dy;
+    }
+  }
+
+  setRandomDirection() {
+    console.log("setting random position");
+    if (Math.random() > 0.5) this.dx = -this.dx;
+    if (Math.random() > 0.5) this.dy = -this.dy;
+  }
+
 }
